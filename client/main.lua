@@ -1,11 +1,7 @@
-RegisterNetEvent('esx_service:notifyAllInService')
-AddEventHandler('esx_service:notifyAllInService', function(notification, target)
-	target = GetPlayerFromServerId(target)
-	if target == PlayerId() then return end
+RegisterNetEvent("esx_service:notifyAllInService", function(notifyMessage, src)
+    local targetPed = GetPlayerPed(GetPlayerFromServerId(src))
+    local mugshot, mugshotStr = ESX.Game.GetPedMugshot(targetPed)
 
-	local targetPed = GetPlayerPed(target)
-	local mugshot, mugshotStr = ESX.Game.GetPedMugshot(targetPed)
-
-	ESX.ShowAdvancedNotification(notification.title, notification.subject, notification.msg, mugshotStr, notification.iconType)
-	UnregisterPedheadshot(mugshot)
+    ESX.ShowAdvancedNotification(notifyMessage.title, notifyMessage.subject, notifyMessage.msg, mugshotStr, notifyMessage.iconType)
+    UnregisterPedheadshot(mugshot)
 end)
