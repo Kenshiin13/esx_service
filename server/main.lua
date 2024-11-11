@@ -51,6 +51,7 @@ end
 ---@field players table<number, boolean>
 ---@field new fun(self:Service, serviceName: string, maxPlayers: number): Service
 ---@field getPlayerCount fun(self:Service): number
+---@field getPlayers fun(self:Service): table<number, boolean>
 ---@field addPlayer fun(self:Service, src: number): boolean
 ---@field removePlayer fun(self:Service, src: number): nil
 ---@field hasPlayer fun(self:Service, src: number): boolean
@@ -77,6 +78,10 @@ end
 
 function Service:getPlayerCount()
     return ESX.Table.SizeOf(self.players)
+end
+
+function Service:getPlayers()
+    return self.players
 end
 
 function Service:addPlayer(src)
@@ -228,7 +233,7 @@ ESX.RegisterServerCallback("esx_service:getInServiceList", function(src, cb, ser
         return
     end
 
-    cb(service.players or {})
+    cb(service:getPlayers())
 end)
 
 ---@param src number
