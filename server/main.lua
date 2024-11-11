@@ -53,7 +53,7 @@ end
 ---@field getPlayerCount fun(self:Service): number
 ---@field addPlayer fun(self:Service, src: number): boolean
 ---@field removePlayer fun(self:Service, src: number): nil
----@field notifyAll fun(self:Service, notifyMessage: ServiceNotification, src: number): nil
+---@field notifyAll fun(self:Service, serviceNotification: ServiceNotification, src: number): nil
 local Service = {}
 Service.__index = Service
 
