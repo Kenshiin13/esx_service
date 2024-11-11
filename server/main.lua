@@ -262,3 +262,15 @@ AddEventHandler("esx:setJob", function(src, job, lastJob)
         currentJobService:addPlayer(src, true)
     end
 end)
+
+---@param src number
+---@param xPlayer table
+---@param isNew boolean
+AddEventHandler("esx:playerLoaded", function(src, xPlayer, isNew)
+    local playerJob = xPlayer.getJob()
+    local jobService = services[playerJob.name]
+
+    if jobService and playerJob.onDuty then
+        jobService:addPlayer(src, true)
+    end
+end)
