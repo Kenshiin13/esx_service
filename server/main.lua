@@ -52,7 +52,7 @@ end
 ---@field new fun(self:Service, serviceName: string, maxPlayers: number): Service
 ---@field getPlayerCount fun(self:Service): number
 ---@field getPlayers fun(self:Service): table<number, boolean>
----@field addPlayer fun(self:Service, src: number): boolean
+---@field addPlayer fun(self:Service, src: number, force:boolean): boolean
 ---@field removePlayer fun(self:Service, src: number): nil
 ---@field hasPlayer fun(self:Service, src: number): boolean
 ---@field notifyAll fun(self:Service, serviceNotification: ServiceNotification, src: number): nil
@@ -84,14 +84,16 @@ function Service:getPlayers()
     return self.players
 end
 
-function Service:addPlayer(src)
+function Service:addPlayer(src, force)
     if self:hasPlayer(src) then
         return true
     end
 
     local servicePlayerCount = self:getPlayerCount()
-    if servicePlayerCount >= self.maxPlayers then
-        return false
+    if not force then
+        if servicePlayerCount >= self.maxPlayers then
+            return false
+        end
     end
 
     self.players[src] = true
@@ -186,7 +188,7 @@ ESX.RegisterServerCallback("esx_service:enableService", function(src, cb, servic
     end
 
     local servicePlayerCount = service:getPlayerCount()
-    local success = service:addPlayer(src)
+    local success = service:addPlayer(src, false)
 
     cb(success, service.maxPlayers, servicePlayerCount)
 end)
@@ -257,6 +259,6 @@ AddEventHandler("esx:setJob", function(src, job, lastJob)
 
     local currentJobService = services[job.name]
     if currentJobService and job.onDuty then
-        currentJobService:addPlayer(src)
+        currentJobService:addPlayer(src, true)
     end
 end)
