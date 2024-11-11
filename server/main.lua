@@ -145,38 +145,6 @@ AddEventHandler("esx_service:activateService", function(serviceName, maxPlayers)
     services[serviceName] = Service:new(serviceName, maxPlayers)
 end)
 
----@param serviceName string
-RegisterNetEvent("esx_service:disableService", function(serviceName)
-    ---@type number
-    local src <const> = source
-
-    local service = services[serviceName]
-    if not service then
-        print(("[^3WARNING^7] Attempted To Use Inactive Service - ^5%s^7"):format(serviceName))
-        return
-    end
-
-    service:removePlayer(src)
-end)
-
----@param serviceNotification ServiceNotification
----@param serviceName string
----@param src number
-AddEventHandler("esx_service:notifyAllInService", function(serviceNotification, serviceName, src)
-    if not isServiceNotification(serviceNotification) then
-        print(("[^3WARNING^7] Attempted To Notify Service With Invalid Notification - ^5%s^7"):format(json.encode(serviceNotification)))
-        return
-    end
-
-    local service = services[serviceName]
-    if not service then
-        print(("[^3WARNING^7] Attempted To Use Inactive Service - ^5%s^7"):format(serviceName))
-        return
-    end
-
-    service:notifyAll(serviceNotification, src)
-end)
-
 ---@param src number
 ---@param cb function
 ---@param serviceName string
@@ -191,6 +159,20 @@ ESX.RegisterServerCallback("esx_service:enableService", function(src, cb, servic
     local success = service:addPlayer(src, false)
 
     cb(success, service.maxPlayers, servicePlayerCount)
+end)
+
+---@param serviceName string
+RegisterNetEvent("esx_service:disableService", function(serviceName)
+    ---@type number
+    local src <const> = source
+
+    local service = services[serviceName]
+    if not service then
+        print(("[^3WARNING^7] Attempted To Use Inactive Service - ^5%s^7"):format(serviceName))
+        return
+    end
+
+    service:removePlayer(src)
 end)
 
 ---@param src number
@@ -236,6 +218,24 @@ ESX.RegisterServerCallback("esx_service:getInServiceList", function(src, cb, ser
     end
 
     cb(service:getPlayers())
+end)
+
+---@param serviceNotification ServiceNotification
+---@param serviceName string
+---@param src number
+AddEventHandler("esx_service:notifyAllInService", function(serviceNotification, serviceName, src)
+    if not isServiceNotification(serviceNotification) then
+        print(("[^3WARNING^7] Attempted To Notify Service With Invalid Notification - ^5%s^7"):format(json.encode(serviceNotification)))
+        return
+    end
+
+    local service = services[serviceName]
+    if not service then
+        print(("[^3WARNING^7] Attempted To Use Inactive Service - ^5%s^7"):format(serviceName))
+        return
+    end
+
+    service:notifyAll(serviceNotification, src)
 end)
 
 ---@param src number
