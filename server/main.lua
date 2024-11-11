@@ -53,6 +53,7 @@ end
 ---@field getPlayerCount fun(self:Service): number
 ---@field addPlayer fun(self:Service, src: number): boolean
 ---@field removePlayer fun(self:Service, src: number): nil
+---@field hasPlayer fun(self:Service, src: number): boolean
 ---@field notifyAll fun(self:Service, serviceNotification: ServiceNotification, src: number): nil
 local Service = {}
 Service.__index = Service
@@ -79,7 +80,7 @@ function Service:getPlayerCount()
 end
 
 function Service:addPlayer(src)
-    if self.players[src] then
+    if self:hasPlayer(src) then
         return true
     end
 
@@ -96,11 +97,15 @@ function Service:addPlayer(src)
 end
 
 function Service:removePlayer(src)
-    if self.players[src] then
+    if self:hasPlayer() then
         self.players[src] = nil
         GlobalState[self.serviceName] = self:getPlayerCount()
         setPlayerJobDuty(src, false, self.serviceName)
     end
+end
+
+function Service:hasPlayer(src)
+    return self.players[src] or false
 end
 
 function Service:notifyAll(serviceNotification, src)
@@ -191,7 +196,7 @@ ESX.RegisterServerCallback("esx_service:isInService", function(src, cb, serviceN
         return
     end
 
-    cb(service.players[src] or false)
+    cb(service:hasPlayer(src))
 end)
 
 ---@param src number
@@ -210,7 +215,7 @@ ESX.RegisterServerCallback("esx_service:isPlayerInService", function(src, cb, se
         return
     end
 
-    cb(service.players[targetSrc] or false)
+    cb(service:hasPlayer(targetSrc))
 end)
 
 ---@param src number
@@ -226,12 +231,12 @@ ESX.RegisterServerCallback("esx_service:getInServiceList", function(src, cb, ser
     cb(service.players or {})
 end)
 
----@param playerId number
+---@param src number
 ---@param reason string
-AddEventHandler("esx:playerDropped", function(playerId, reason)
+AddEventHandler("esx:playerDropped", function(src, reason)
     for _, service in pairs(services) do
-        if service.players[playerId] then
-            service:removePlayer(playerId)
+        if service:hasPlayer(src) then
+            service:removePlayer(src)
         end
     end
 end)
