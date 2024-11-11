@@ -102,7 +102,7 @@ function Service:addPlayer(src)
 end
 
 function Service:removePlayer(src)
-    if self:hasPlayer() then
+    if self:hasPlayer(src) then
         self.players[src] = nil
         GlobalState[self.serviceName] = self:getPlayerCount()
         setPlayerJobDuty(src, false, self.serviceName)
